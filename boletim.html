@@ -73,6 +73,11 @@
             // Encontra o aluno selecionado
             const aluno = alunos.find(a => a.matricula === matricula);
 
+            if (!aluno) {
+                boletimAluno.innerHTML = "<p class='text-red-500'>Nenhum aluno encontrado.</p>";
+                return;
+            }
+
             // Filtra as notas do aluno selecionado
             const notasAluno = notas.filter(nota => nota.aluno === matricula);
 

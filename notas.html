@@ -45,32 +45,36 @@
 
                     // Coluna Aluno (com ícones de editar e excluir)
                     const cellAluno = document.createElement('td');
-                    cellAluno.className = 'border px-4 py-2 flex items-center justify-between';
+                    cellAluno.className = 'border px-4 py-2';
                     cellAluno.innerHTML = `
-                        <span>${aluno.nome}</span>
-                        <div>
-                            <button class="text-blue-500 hover:text-blue-700 mr-2" onclick="editarAluno('${aluno.matricula}')">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="text-red-500 hover:text-red-700" onclick="excluirAluno('${aluno.matricula}')">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                        <div class="flex items-center justify-between">
+                            <span>${aluno.nome}</span>
+                            <div>
+                                <button class="text-blue-500 hover:text-blue-700 mr-2" onclick="editarAluno('${aluno.matricula}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-red-500 hover:text-red-700" onclick="excluirAluno('${aluno.matricula}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
                         </div>
                     `;
                     row.appendChild(cellAluno);
 
                     // Coluna Disciplina (com ícones de editar e excluir)
                     const cellDisciplina = document.createElement('td');
-                    cellDisciplina.className = 'border px-4 py-2 flex items-center justify-between';
+                    cellDisciplina.className = 'border px-4 py-2';
                     cellDisciplina.innerHTML = `
-                        <span>${disciplina.nome}</span>
-                        <div>
-                            <button class="text-blue-500 hover:text-blue-700 mr-2" onclick="editarDisciplina('${disciplina.nome}')">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="text-red-500 hover:text-red-700" onclick="excluirDisciplina('${disciplina.nome}')">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                        <div class="flex items-center justify-between">
+                            <span>${disciplina.nome}</span>
+                            <div>
+                                <button class="text-blue-500 hover:text-blue-700 mr-2" onclick="editarDisciplina('${disciplina.nome}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-red-500 hover:text-red-700" onclick="excluirDisciplina('${disciplina.nome}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
                         </div>
                     `;
                     row.appendChild(cellDisciplina);

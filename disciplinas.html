@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disciplinas</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Ícones do Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-4">
+        <h1 class="text-2xl font-bold mb-4">Disciplinas</h1>
+        <form id="formDisciplina" class="bg-white p-6 rounded-lg shadow-md">
+            <div class="mb-4">
+                <label class="block text-gray-700">Nome da Disciplina</label>
+                <select id="nomeDisciplina" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                    <option value="" disabled selected>Selecione uma disciplina</option>
+                    <option value="Português">Português</option>
+                    <option value="Matemática">Matemática</option>
+                    <option value="História">História</option>
+                    <option value="Geografia">Geografia</option>
+                    <option value="Ciências">Ciências</option>
+                    <option value="LPT">LPT</option>
+                    <option value="Arte">Arte</option>
+                    <option value="Ed. Física">Ed. Física</option>
+                    <option value="Inglês">Inglês</option>
+                    <option value="Religião">Religião</option>
+                </select>
+            </div>
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Adicionar</button>
+        </form>
+
+        <div class="mt-8">
+            <h2 class="text-xl font-bold mb-4">Disciplinas Cadastradas</h2>
+            <ul id="listaDisciplinas" class="bg-white p-6 rounded-lg shadow-md"></ul>
+        </div>
+    </div>
+
+    <script>
+        // Variável para controlar o índice da disciplina sendo editada
+        let disciplinaEditando = null;
+
+        // Função para carregar disciplinas do localStorage
+        function carregarDisciplinas() {
+            const disciplinas = JSON.parse(localStorage.getItem('disciplinas')) || [];
+            const listaDisciplinas = document.getElementById('listaDisciplinas');
+            listaDisciplinas.innerHTML = disciplinas.map((disciplina, index) => `
+                <li class="flex justify-between items-center mb-2 p-2 hover:bg-gray-50 rounded-md">
+                    <span>${disciplina.nome}</span>
+                    <div>
+                        <button class="text-blue-500 hover:text-blue-700 mr-2" onclick="editarDisciplina(${index})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="text-red-500 hover:text-red-700" onclick="deletarDisciplina(${index})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </li>
+            `).join('');
+        }
+
+        // Função para salvar ou atualizar disciplina
+        document.getElementById('formDisciplina').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const nome = document.getElementById('nomeDisciplina').value;
+
+            if (!nome) {
+                alert("Selecione uma disciplina válida.");
+                return;
+            }
+
+            const disciplina = { nome };
+            const disciplinas = JSON.parse(localStorage.getItem('disciplinas')) || [];
+
+            if (disciplinaEditando !== null) {
+                // Atualiza a disciplina existente
+                disciplinas[disciplinaEditando] = disciplina;
+                disciplinaEditando = null; // Reseta o índice de edição
+            } else {
+                // Adiciona uma nova disciplina
+                disciplinas.push(disciplina);
+            }
+
+            localStorage.setItem('disciplinas', JSON.stringify(disciplinas));
+            carregarDisciplinas();
+            document.getElementById('formDisciplina').reset();
+        });
+
+        // Função para editar disciplina
+        function editarDisciplina(index) {
+            const disciplinas = JSON.parse(localStorage.getItem('disciplinas')) || [];
+            const disciplina = disciplinas[index];
+
+            // Preenche o formulário com os dados da disciplina
+            document.getElementById('nomeDisciplina').value = disciplina.nome;
+
+            // Define o índice da disciplina sendo editada
+            disciplinaEditando = index;
+        }
+
+        // Função para deletar disciplina
+        function deletarDisciplina(index) {
+            const disciplinas = JSON.parse(localStorage.getItem('disciplinas')) || [];
+            disciplinas.splice(index, 1); // Remove a disciplina do array
+            localStorage.setItem('disciplinas', JSON.stringify(disciplinas));
+            carregarDisciplinas(); // Recarrega a lista de disciplinas
+        }
+
+        // Carregar disciplinas ao abrir a página
+        carregarDisciplinas();
+    </script>
+</body>
+</html>

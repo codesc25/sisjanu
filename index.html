@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Escola Januário E. de Lima</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Ícones do Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Estilos personalizados para neomorfismo e accent color azul claro */
+        body {
+            background-color: #f0f4f8;
+            color: #2d3748;
+        }
+        .card {
+            background: #f0f4f8;
+            border-radius: 20px;
+            box-shadow: 8px 8px 16px #c8d0e7, -8px -8px 16px #ffffff;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 12px 12px 24px #c8d0e7, -12px -12px 24px #ffffff;
+        }
+        .card-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 1.5rem;
+            box-shadow: 4px 4px 8px #c8d0e7, -4px -4px 8px #ffffff;
+        }
+        .accent-blue {
+            color: #63b3ed;
+        }
+        .accent-bg-blue {
+            background-color: #63b3ed;
+        }
+        .accent-border-blue {
+            border-color: #63b3ed;
+        }
+        .text-accent-blue {
+            color: #63b3ed;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans p-4 sm:p-8">
+    <div class="container mx-auto p-4">
+        <!-- Cabeçalho com logo e nome da escola -->
+        <div class="flex flex-col items-center mb-12">
+            <img src="https://educ.nekoweb.org/sistemajanuario/Design%20sem%20nome.png" alt="Logo da Escola" class="w-48 h-48 mb-6 rounded-full shadow-lg">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">Escola Januário E. de Lima</h1>
+            <p class="text-lg text-gray-600">Sistema de Gestão Escolar</p>
+        </div>
+
+        <!-- Cards de navegação -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <!-- Card Alunos -->
+            <a href="https://educ.nekoweb.org/sisjanu/alunos.html" class="card bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 flex flex-col items-center justify-center aspect-square">
+                <img src="https://educ.nekoweb.org/sisjanu/alunos.jpg" alt="Ícone Alunos" class="card-image">
+                <h2 class="text-2xl font-semibold text-accent-blue mb-3">Alunos</h2>
+                <p class="text-gray-600 text-center">Cadastro e gerenciamento de alunos.</p>
+                <p class="text-xl font-bold text-accent-blue mt-2" id="contadorAlunos">0</p>
+            </a>
+
+            <!-- Card Disciplinas -->
+            <a href="https://educ.nekoweb.org/sisjanu/disciplinas.html" class="card bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 flex flex-col items-center justify-center aspect-square">
+                <img src="https://educ.nekoweb.org/sisjanu/disciplina.jpg" alt="Ícone Disciplinas" class="card-image">
+                <h2 class="text-2xl font-semibold text-accent-blue mb-3">Disciplinas</h2>
+                <p class="text-gray-600 text-center">Listagem e cadastro de disciplinas.</p>
+                <p class="text-xl font-bold text-accent-blue mt-2" id="contadorDisciplinas">0</p>
+            </a>
+
+            <!-- Card Notas -->
+            <a href="https://educ.nekoweb.org/sisjanu/notas.html" class="card bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 flex flex-col items-center justify-center aspect-square">
+                <img src="https://educ.nekoweb.org/sisjanu/notas.jpg" alt="Ícone Notas" class="card-image">
+                <h2 class="text-2xl font-semibold text-accent-blue mb-3">Notas</h2>
+                <p class="text-gray-600 text-center">Lançamento e consulta de notas.</p>
+                <p class="text-xl font-bold text-accent-blue mt-2" id="contadorNotas">0</p>
+            </a>
+
+            <!-- Card Boletim -->
+            <a href="https://educ.nekoweb.org/sisjanu/boletim.html" class="card bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 flex flex-col items-center justify-center aspect-square">
+                <img src="https://educ.nekoweb.org/sisjanu/boletim.jpg" alt="Ícone Boletim" class="card-image">
+                <h2 class="text-2xl font-semibold text-accent-blue mb-3">Boletim</h2>
+                <p class="text-gray-600 text-center">Geração de boletins individuais.</p>
+                <p class="text-xl font-bold text-accent-blue mt-2" id="contadorBoletins">0</p>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Função para carregar contadores
+        function carregarContadores() {
+            // Contador de Alunos
+            const alunos = JSON.parse(localStorage.getItem('alunos')) || [];
+            document.getElementById('contadorAlunos').textContent = alunos.length;
+
+            // Contador de Disciplinas
+            const disciplinas = JSON.parse(localStorage.getItem('disciplinas')) || [];
+            document.getElementById('contadorDisciplinas').textContent = disciplinas.length;
+
+            // Contador de Notas (alunos com pelo menos uma nota lançada)
+            const notas = JSON.parse(localStorage.getItem('notas')) || [];
+            const alunosComNotas = new Set(notas.map(nota => nota.aluno)).size; // Conta alunos únicos com notas
+            document.getElementById('contadorNotas').textContent = alunosComNotas;
+
+            // Contador de Boletins (quantidade de boletins gerados)
+            const boletins = JSON.parse(localStorage.getItem('boletins')) || [];
+            document.getElementById('contadorBoletins').textContent = boletins.length;
+        }
+
+        // Carregar contadores ao abrir a página
+        carregarContadores();
+    </script>
+</body>
+</html>

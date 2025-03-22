@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alunos</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Ícones do Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-4">
+        <h1 class="text-2xl font-bold mb-4">Cadastro de Alunos</h1>
+        <form id="formAluno" class="bg-white p-6 rounded-lg shadow-md">
+            <div class="mb-4">
+                <label class="block text-gray-700">Nome do Aluno</label>
+                <input type="text" id="nomeAluno" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700">Matrícula</label>
+                <input type="text" id="matriculaAluno" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+            </div>
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Cadastrar</button>
+        </form>
+
+        <div class="mt-8">
+            <h2 class="text-xl font-bold mb-4">Alunos Cadastrados</h2>
+            <ul id="listaAlunos" class="bg-white p-6 rounded-lg shadow-md"></ul>
+        </div>
+    </div>
+
+    <script>
+        // Variável para controlar o índice do aluno sendo editado
+        let alunoEditando = null;
+
+        // Função para carregar alunos do localStorage
+        function carregarAlunos() {
+            const alunos = JSON.parse(localStorage.getItem('alunos')) || [];
+            const listaAlunos = document.getElementById('listaAlunos');
+            listaAlunos.innerHTML = alunos.map((aluno, index) => `
+                <li class="flex justify-between items-center mb-2 p-2 hover:bg-gray-50 rounded-md">
+                    <span>${aluno.nome} - Matrícula: ${aluno.matricula}</span>
+                    <div>
+                        <button class="text-blue-500 hover:text-blue-700 mr-2" onclick="editarAluno(${index})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="text-red-500 hover:text-red-700" onclick="deletarAluno(${index})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </li>
+            `).join('');
+        }
+
+        // Função para salvar ou atualizar aluno
+        document.getElementById('formAluno').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const nome = document.getElementById('nomeAluno').value;
+            const matricula = document.getElementById('matriculaAluno').value;
+
+            const aluno = { nome, matricula };
+            const alunos = JSON.parse(localStorage.getItem('alunos')) || [];
+
+            if (alunoEditando !== null) {
+                // Atualiza o aluno existente
+                alunos[alunoEditando] = aluno;
+                alunoEditando = null; // Reseta o índice de edição
+            } else {
+                // Adiciona um novo aluno
+                alunos.push(aluno);
+            }
+
+            localStorage.setItem('alunos', JSON.stringify(alunos));
+            carregarAlunos();
+            document.getElementById('formAluno').reset();
+        });
+
+        // Função para editar aluno
+        function editarAluno(index) {
+            const alunos = JSON.parse(localStorage.getItem('alunos')) || [];
+            const aluno = alunos[index];
+
+            // Preenche o formulário com os dados do aluno
+            document.getElementById('nomeAluno').value = aluno.nome;
+            document.getElementById('matriculaAluno').value = aluno.matricula;
+
+            // Define o índice do aluno sendo editado
+            alunoEditando = index;
+        }
+
+        // Função para deletar aluno
+        function deletarAluno(index) {
+            const alunos = JSON.parse(localStorage.getItem('alunos')) || [];
+            alunos.splice(index, 1); // Remove o aluno do array
+            localStorage.setItem('alunos', JSON.stringify(alunos));
+            carregarAlunos(); // Recarrega a lista de alunos
+        }
+
+        // Carregar alunos ao abrir a página
+        carregarAlunos();
+    </script>
+</body>
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notas</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Ícones do Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-4">
+        <h1 class="text-2xl font-bold mb-4">Lançamento de Notas</h1>
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <table class="min-w-full bg-white">
+                <thead>
+                    <tr>
+                        <th class="py-2">Aluno</th>
+                        <th class="py-2">Disciplina</th>
+                        <th class="py-2">I Unidade</th>
+                        <th class="py-2">II Unidade</th>
+                        <th class="py-2">III Unidade</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaNotas"></tbody>
+            </table>
+            <button id="salvarNotas" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Salvar Notas</button>
+        </div>
+    </div>
+
+    <script>
+        // Função para carregar alunos e disciplinas
+        function carregarDados() {
+            const alunos = JSON.parse(localStorage.getItem('alunos')) || [];
+            const disciplinas = JSON.parse(localStorage.getItem('disciplinas')) || [];
+            const tabelaNotas = document.getElementById('tabelaNotas');
+
+            // Limpa a tabela antes de carregar os dados
+            tabelaNotas.innerHTML = '';
+
+            // Preenche a tabela com alunos e disciplinas
+            alunos.forEach(aluno => {
+                disciplinas.forEach(disciplina => {
+                    const row = document.createElement('tr');
+
+                    // Coluna Aluno (com ícones de editar e excluir)
+                    const cellAluno = document.createElement('td');
+                    cellAluno.className = 'border px-4 py-2 flex items-center justify-between';
+                    cellAluno.innerHTML = `
+                        <span>${aluno.nome}</span>
+                        <div>
+                            <button class="text-blue-500 hover:text-blue-700 mr-2" onclick="editarAluno('${aluno.matricula}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="text-red-500 hover:text-red-700" onclick="excluirAluno('${aluno.matricula}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                    row.appendChild(cellAluno);
+
+                    // Coluna Disciplina (com ícones de editar e excluir)
+                    const cellDisciplina = document.createElement('td');
+                    cellDisciplina.className = 'border px-4 py-2 flex items-center justify-between';
+                    cellDisciplina.innerHTML = `
+                        <span>${disciplina.nome}</span>
+                        <div>
+                            <button class="text-blue-500 hover:text-blue-700 mr-2" onclick="editarDisciplina('${disciplina.nome}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="text-red-500 hover:text-red-700" onclick="excluirDisciplina('${disciplina.nome}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                    row.appendChild(cellDisciplina);
+
+                    // Colunas de Notas (I, II, III Unidade)
+                    for (let unidade = 1; unidade <= 3; unidade++) {
+                        const cellNota = document.createElement('td');
+                        cellNota.className = 'border px-4 py-2';
+
+                        const inputNota = document.createElement('input');
+                        inputNota.type = 'number';
+                        inputNota.className = 'w-16 nota';
+                        inputNota.setAttribute('data-aluno', aluno.matricula);
+                        inputNota.setAttribute('data-disciplina', disciplina.nome);
+                        inputNota.setAttribute('data-unidade', unidade);
+
+                        // Carrega o valor salvo no localStorage, se existir
+                        const notasSalvas = JSON.parse(localStorage.getItem('notas')) || [];
+                        const notaExistente = notasSalvas.find(n =>
+                            n.aluno === aluno.matricula &&
+                            n.disciplina === disciplina.nome &&
+                            n.unidade === unidade.toString()
+                        );
+                        if (notaExistente) {
+                            inputNota.value = notaExistente.valor;
+                        }
+
+                        cellNota.appendChild(inputNota);
+                        row.appendChild(cellNota);
+                    }
+
+                    tabelaNotas.appendChild(row);
+                });
+            });
+        }
+
+        // Função para editar aluno
+        function editarAluno(matricula) {
+            const alunos = JSON.parse(localStorage.getItem('alunos')) || [];
+            const aluno = alunos.find(a => a.matricula === matricula);
+            if (aluno) {
+                const novoNome = prompt("Editar nome do aluno:", aluno.nome);
+                if (novoNome) {
+                    aluno.nome = novoNome;
+                    localStorage.setItem('alunos', JSON.stringify(alunos));
+                    carregarDados(); // Recarrega a tabela
+                }
+            }
+        }
+
+        // Função para excluir aluno
+        function excluirAluno(matricula) {
+            if (confirm("Tem certeza que deseja excluir este aluno?")) {
+                const alunos = JSON.parse(localStorage.getItem('alunos')) || [];
+                const novasAlunos = alunos.filter(a => a.matricula !== matricula);
+                localStorage.setItem('alunos', JSON.stringify(novasAlunos));
+                carregarDados(); // Recarrega a tabela
+            }
+        }
+
+        // Função para editar disciplina
+        function editarDisciplina(nome) {
+            const disciplinas = JSON.parse(localStorage.getItem('disciplinas')) || [];
+            const disciplina = disciplinas.find(d => d.nome === nome);
+            if (disciplina) {
+                const novoNome = prompt("Editar nome da disciplina:", disciplina.nome);
+                if (novoNome) {
+                    disciplina.nome = novoNome;
+                    localStorage.setItem('disciplinas', JSON.stringify(disciplinas));
+                    carregarDados(); // Recarrega a tabela
+                }
+            }
+        }
+
+        // Função para excluir disciplina
+        function excluirDisciplina(nome) {
+            if (confirm("Tem certeza que deseja excluir esta disciplina?")) {
+                const disciplinas = JSON.parse(localStorage.getItem('disciplinas')) || [];
+                const novasDisciplinas = disciplinas.filter(d => d.nome !== nome);
+                localStorage.setItem('disciplinas', JSON.stringify(novasDisciplinas));
+                carregarDados(); // Recarrega a tabela
+            }
+        }
+
+        // Função para salvar notas no localStorage
+        document.getElementById('salvarNotas').addEventListener('click', function () {
+            const notas = JSON.parse(localStorage.getItem('notas')) || [];
+            const alunos = JSON.parse(localStorage.getItem('alunos')) || [];
+            const disciplinas = JSON.parse(localStorage.getItem('disciplinas')) || [];
+
+            // Limpa as notas antigas
+            localStorage.setItem('notas', JSON.stringify([]));
+
+            // Percorre todos os campos de entrada de notas
+            document.querySelectorAll('.nota').forEach(input => {
+                const aluno = input.getAttribute('data-aluno');
+                const disciplina = input.getAttribute('data-disciplina');
+                const unidade = input.getAttribute('data-unidade');
+                const valor = input.value;
+
+                if (valor) {
+                    notas.push({ aluno, disciplina, unidade, valor });
+                }
+            });
+
+            // Salva as notas no localStorage
+            localStorage.setItem('notas', JSON.stringify(notas));
+            alert('Notas salvas com sucesso!');
+        });
+
+        // Carregar dados ao abrir a página
+        carregarDados();
+    </script>
+</body>
+</html>

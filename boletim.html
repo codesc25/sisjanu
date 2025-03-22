@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boletim Escolar</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+        }
+        @media print {
+            .no-print {
+                display: none;
+            }
+            .print-container {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            .print-table {
+                width: 100%;
+                table-layout: fixed;
+                font-size: 12px; /* Reduz o tamanho da fonte para caber mais conteúdo */
+            }
+            .print-table th, .print-table td {
+                padding: 6px;
+                word-wrap: break-word;
+            }
+            .print-header {
+                margin-bottom: 10px;
+            }
+            .print-signatures {
+                margin-top: 10px;
+                page-break-inside: avoid; /* Evita que as assinaturas sejam divididas em duas páginas */
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-4">
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <label class="block text-gray-700 no-print">Selecione o Aluno</label>
+            <select id="alunoBoletim" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm no-print"></select>
+            <div id="boletimAluno" class="mt-4"></div>
+        </div>
+    </div>
+
+    <script>
+        // Função para carregar alunos no select
+        function carregarAlunos() {
+            const alunos = JSON.parse(localStorage.getItem('alunos')) || [];
+            const select = document.getElementById('alunoBoletim');
+            select.innerHTML = alunos.map(aluno => `
+                <option value="${aluno.matricula}">${aluno.nome}</option>
+            `).join('');
+
+            // Gerar boletim para o primeiro aluno ao carregar a página
+            if (alunos.length > 0) {
+                gerarBoletim(alunos[0].matricula);
+            }
+        }
+
+        // Função para gerar o boletim
+        function gerarBoletim(matricula) {
+            const notas = JSON.parse(localStorage.getItem('notas')) || [];
+            const disciplinas = JSON.parse(localStorage.getItem('disciplinas')) || [];
+            const alunos = JSON.parse(localStorage.getItem('alunos')) || [];
+            const boletimAluno = document.getElementById('boletimAluno');
+
+            // Encontra o aluno selecionado
+            const aluno = alunos.find(a => a.matricula === matricula);
+
+            // Filtra as notas do aluno selecionado
+            const notasAluno = notas.filter(nota => nota.aluno === matricula);
+
+            // Gera o boletim para cada disciplina
+            const boletim = `
+                <div class="print-container">
+                    <!-- Cabeçalho com logo e nome da escola -->
+                    <div class="flex items-center justify-center mb-4 print-header">
+                        <img src="https://educ.nekoweb.org/sistemajanuario/Design%20sem%20nome.png" alt="Logo da Escola" class="w-20 h-20 mr-4">
+                        <h1 class="text-2xl font-bold text-gray-900">Escola Januário E. de Lima</h1>
+                    </div>
+
+                    <h2 class="text-xl font-bold text-gray-900 mb-4">Boletim Escolar</h2>
+                    <p class="text-gray-700 mb-2"><strong>Aluno:</strong> ${aluno.nome}</p>
+                    <p class="text-gray-700 mb-4"><strong>Matrícula:</strong> ${aluno.matricula}</p>
+
+                    <!-- Tabela Minimalista -->
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white print-table">
+                            <thead>
+                                <tr class="text-left border-b">
+                                    <th class="py-2 px-3 font-medium text-gray-700">Disciplina</th>
+                                    <th class="py-2 px-3 font-medium text-gray-700">I Unidade</th>
+                                    <th class="py-2 px-3 font-medium text-gray-700">II Unidade</th>
+                                    <th class="py-2 px-3 font-medium text-gray-700">III Unidade</th>
+                                    <th class="py-2 px-3 font-medium text-gray-700">Faltas</th>
+                                    <th class="py-2 px-3 font-medium text-gray-700">Total</th>
+                                    <th class="py-2 px-3 font-medium text-gray-700">Resultado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${disciplinas.map(disciplina => {
+                                    const notasDisciplina = notasAluno.filter(nota => nota.disciplina === disciplina.nome);
+                                    const notasValores = notasDisciplina.map(nota => parseFloat(nota.valor));
+                                    const media = notasValores.length > 0 ? (notasValores.reduce((sum, valor) => sum + valor, 0) / notasValores.length) : 0;
+                                    const resultado = media >= 6 ? 'Aprovado' : 'Reprovado';
+
+                                    return `
+                                        <tr class="border-b">
+                                            <td class="py-2 px-3 text-gray-700">${disciplina.nome}</td>
+                                            <td class="py-2 px-3 text-gray-700">${notasDisciplina.find(n => n.unidade === '1')?.valor || '-'}</td>
+                                            <td class="py-2 px-3 text-gray-700">${notasDisciplina.find(n => n.unidade === '2')?.valor || '-'}</td>
+                                            <td class="py-2 px-3 text-gray-700">${notasDisciplina.find(n => n.unidade === '3')?.valor || '-'}</td>
+                                            <td class="py-2 px-3 text-gray-700">0</td> <!-- Faltas (pode ser ajustado) -->
+                                            <td class="py-2 px-3 text-gray-700">${media.toFixed(2)}</td>
+                                            <td class="py-2 px-3 text-gray-700">${resultado}</td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Assinaturas -->
+                    <div class="mt-6 flex justify-between print-signatures">
+                        <div class="text-center">
+                            <p class="text-gray-700 mb-2">___________________________</p>
+                            <p class="text-gray-700">Assinatura do Diretor</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-gray-700 mb-2">___________________________</p>
+                            <p class="text-gray-700">Assinatura da Coordenadora Pedagógica</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botões -->
+                <div class="mt-6 text-center space-x-4 no-print">
+                    <button onclick="window.print()" class="bg-gray-600 text-white px-6 py-2 rounded-md hover:bg-gray-500 transition">
+                        <i class="fas fa-print"></i> Imprimir
+                    </button>
+                </div>
+            `;
+
+            // Exibe o boletim na página
+            boletimAluno.innerHTML = boletim;
+        }
+
+        // Carregar alunos e gerar boletim ao selecionar um aluno
+        carregarAlunos();
+        document.getElementById('alunoBoletim').addEventListener('change', function () {
+            gerarBoletim(this.value);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Professores</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Ícones do Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-4">
+        <h1 class="text-2xl font-bold mb-4">Cadastro de Professores</h1>
+        <form id="formProfessor" class="bg-white p-6 rounded-lg shadow-md">
+            <div class="mb-4">
+                <label class="block text-gray-700">Nome do Professor</label>
+                <input type="text" id="nomeProfessor" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700">Disciplina</label>
+                <select id="disciplinaProfessor" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                    <option value="" disabled selected>Selecione a disciplina</option>
+                    <option value="Português">Português</option>
+                    <option value="Matemática">Matemática</option>
+                    <option value="História">História</option>
+                    <option value="Geografia">Geografia</option>
+                    <option value="Ciências">Ciências</option>
+                    <option value="LPT">LPT</option>
+                    <option value="Arte">Arte</option>
+                    <option value="Ed. Física">Ed. Física</option>
+                    <option value="Inglês">Inglês</option>
+                    <option value="Religião">Religião</option>
+                </select>
+            </div>
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Cadastrar</button>
+        </form>
+
+        <div class="mt-8">
+            <h2 class="text-xl font-bold mb-4">Professores Cadastrados</h2>
+            <ul id="listaProfessores" class="bg-white p-6 rounded-lg shadow-md"></ul>
+        </div>
+    </div>
+
+    <script>
+        // Função para carregar professores do localStorage
+        function carregarProfessores() {
+            const professores = JSON.parse(localStorage.getItem('professores')) || [];
+            const listaProfessores = document.getElementById('listaProfessores');
+            listaProfessores.innerHTML = professores.map((professor, index) => `
+                <li class="flex justify-between items-center mb-2 p-2 hover:bg-gray-50 rounded-md">
+                    <span>${professor.nome} - ${professor.disciplina}</span>
+                    <div>
+                        <button class="text-blue-500 hover:text-blue-700 mr-2" onclick="editarProfessor(${index})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="text-red-500 hover:text-red-700" onclick="excluirProfessor(${index})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </li>
+            `).join('');
+        }
+
+        // Função para salvar ou atualizar professor
+        document.getElementById('formProfessor').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const nome = document.getElementById('nomeProfessor').value;
+            const disciplina = document.getElementById('disciplinaProfessor').value;
+
+            const professor = { nome, disciplina };
+            const professores = JSON.parse(localStorage.getItem('professores')) || [];
+
+            professores.push(professor);
+            localStorage.setItem('professores', JSON.stringify(professores));
+
+            carregarProfessores();
+            document.getElementById('formProfessor').reset();
+        });
+
+        // Função para editar professor
+        function editarProfessor(index) {
+            const professores = JSON.parse(localStorage.getItem('professores')) || [];
+            const professor = professores[index];
+
+            const novoNome = prompt("Editar nome do professor:", professor.nome);
+            const novaDisciplina = prompt("Editar disciplina do professor:", professor.disciplina);
+
+            if (novoNome && novaDisciplina) {
+                professor.nome = novoNome;
+                professor.disciplina = novaDisciplina;
+                localStorage.setItem('professores', JSON.stringify(professores));
+                carregarProfessores();
+            }
+        }
+
+        // Função para excluir professor
+        function excluirProfessor(index) {
+            if (confirm("Tem certeza que deseja excluir este professor?")) {
+                const professores = JSON.parse(localStorage.getItem('professores')) || [];
+                professores.splice(index, 1);
+                localStorage.setItem('professores', JSON.stringify(professores));
+                carregarProfessores();
+            }
+        }
+
+        // Carregar professores ao abrir a página
+        carregarProfessores();
+    </script>
+</body>
+</html>

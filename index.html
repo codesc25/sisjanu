@@ -12,17 +12,39 @@
         body {
             background-color: #f0f4f8;
             color: #2d3748;
+            transition: all 0.3s ease;
         }
+        
+        body.dark {
+            background-color: #1a202c;
+            color: #e2e8f0;
+        }
+        
+        .dark .text-gray-600, .dark .text-gray-800 {
+            color: #e2e8f0;
+        }
+        
         .card {
             background: #f0f4f8;
             border-radius: 20px;
             box-shadow: 8px 8px 16px #c8d0e7, -8px -8px 16px #ffffff;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
+        
+        .dark .card {
+            background: #2d3748;
+            box-shadow: 8px 8px 16px #1a202c, -8px -8px 16px #4a5568;
+        }
+        
         .card:hover {
             transform: translateY(-5px);
             box-shadow: 12px 12px 24px #c8d0e7, -12px -12px 24px #ffffff;
         }
+        
+        .dark .card:hover {
+            box-shadow: 12px 12px 24px #1a202c, -12px -12px 24px #4a5568;
+        }
+        
         .card-image {
             width: 80px;
             height: 80px;
@@ -31,21 +53,132 @@
             margin-bottom: 1.5rem;
             box-shadow: 4px 4px 8px #c8d0e7, -4px -4px 8px #ffffff;
         }
+        
+        .dark .card-image {
+            box-shadow: 4px 4px 8px #1a202c, -4px -4px 8px #4a5568;
+        }
+        
         .accent-blue {
             color: #63b3ed;
         }
+        
         .accent-bg-blue {
             background-color: #63b3ed;
         }
+        
         .accent-border-blue {
             border-color: #63b3ed;
         }
+        
         .text-accent-blue {
             color: #63b3ed;
+        }
+        
+        .counter-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 1rem;
+            padding: 0.8rem 1rem;
+            border-radius: 10px;
+            background: #f0f4f8;
+            box-shadow: 4px 4px 8px #c8d0e7, -4px -4px 8px #ffffff;
+            width: 100%;
+            max-width: 300px; /* mesma largura máxima dos cards */
+        }
+        
+        .dark .counter-container {
+            background: #2d3748;
+            box-shadow: 4px 4px 8px #1a202c, -4px -4px 8px #4a5568;
+        }
+        
+        .counter-icon {
+            margin-right: 0.8rem;
+            color: #63b3ed;
+            font-size: 1.2rem;
+        }
+        
+        .counter-value {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #63b3ed;
+            min-width: 2.5rem;
+            text-align: center;
+        }
+        
+        /* Toggle Switch */
+        .toggle-switch {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: #63b3ed;
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        .toggle-label {
+            margin-left: 10px;
+            font-size: 14px;
+            color: #2d3748;
+        }
+        
+        .dark .toggle-label {
+            color: #e2e8f0;
         }
     </style>
 </head>
 <body class="bg-gray-100 font-sans p-4 sm:p-8">
+    <!-- Toggle Switch para Modo Escuro -->
+    <div class="toggle-switch">
+        <label class="switch">
+            <input type="checkbox" id="darkModeToggle">
+            <span class="slider"></span>
+        </label>
+        <span class="toggle-label" id="toggleLabel">Modo Escuro</span>
+    </div>
+
     <div class="container mx-auto p-4">
         <!-- Cabeçalho com logo e nome da escola -->
         <div class="flex flex-col items-center mb-12">
@@ -54,69 +187,172 @@
             <p class="text-lg text-gray-600">Sistema Simples de Gestão de Alunos</p>
             <p class="text-lg text-gray-600">Coordenação Pedagógica</p>
         </div>
-
+      
         <!-- Cards de navegação -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
             <!-- Card Alunos -->
-            <a href="https://educ.nekoweb.org/sisjanu/alunos.html" class="card bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 flex flex-col items-center justify-center aspect-square">
-                <img src="https://educ.nekoweb.org/sisjanu/alunos.jpg" alt="Ícone Alunos" class="card-image">
-                <h2 class="text-2xl font-semibold text-accent-blue mb-3">Alunos</h2>
-                <p class="text-gray-600 text-center">Cadastro e gerenciamento de alunos.</p>
-                <p class="text-xl font-bold text-accent-blue mt-2" id="contadorAlunos">0</p>
-            </a>
+            <div class="flex flex-col items-center">
+                <a href="https://educ.nekoweb.org/sisjanu/alunos.html" class="card bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 flex flex-col items-center justify-center aspect-square w-full max-w-xs">
+                    <img src="https://educ.nekoweb.org/sisjanu/alunos.jpg" alt="Ícone Alunos" class="card-image">
+                    <h2 class="text-2xl font-semibold text-accent-blue mb-3">Alunos</h2>
+                    <p class="text-gray-600 text-center">Cadastro e gerenciamento de alunos.</p>
+                </a>
+                <div class="counter-container">
+                    <i class="fas fa-users counter-icon"></i>
+                    <span class="counter-value" id="contadorAlunos">0</span>
+                </div>
+            </div>
 
             <!-- Card Disciplinas -->
-            <a href="https://educ.nekoweb.org/sisjanu/disciplinas.html" class="card bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 flex flex-col items-center justify-center aspect-square">
-                <img src="https://educ.nekoweb.org/sisjanu/disciplina.jpg" alt="Ícone Disciplinas" class="card-image">
-                <h2 class="text-2xl font-semibold text-accent-blue mb-3">Disciplinas</h2>
-                <p class="text-gray-600 text-center">Listagem e cadastro de disciplinas.</p>
-                <p class="text-xl font-bold text-accent-blue mt-2" id="contadorDisciplinas">0</p>
-            </a>
+            <div class="flex flex-col items-center">
+                <a href="https://educ.nekoweb.org/sisjanu/disciplinas.html" class="card bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 flex flex-col items-center justify-center aspect-square w-full max-w-xs">
+                    <img src="https://educ.nekoweb.org/sisjanu/disciplina.jpg" alt="Ícone Disciplinas" class="card-image">
+                    <h2 class="text-2xl font-semibold text-accent-blue mb-3">Disciplinas</h2>
+                    <p class="text-gray-600 text-center">Listagem e cadastro de disciplinas.</p>
+                </a>
+                <div class="counter-container">
+                    <i class="fas fa-book counter-icon"></i>
+                    <span class="counter-value" id="contadorDisciplinas">0</span>
+                </div>
+            </div>
 
             <!-- Card Notas -->
-            <a href="https://educ.nekoweb.org/sisjanu/notas.html" class="card bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 flex flex-col items-center justify-center aspect-square">
-                <img src="https://educ.nekoweb.org/sisjanu/notas.jpg" alt="Ícone Notas" class="card-image">
-                <h2 class="text-2xl font-semibold text-accent-blue mb-3">Notas</h2>
-                <p class="text-gray-600 text-center">Lançamento e consulta de notas.</p>
-                <p class="text-xl font-bold text-accent-blue mt-2" id="contadorNotas">0</p>
-            </a>
+            <div class="flex flex-col items-center">
+                <a href="https://educ.nekoweb.org/sisjanu/notas.html" class="card bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 flex flex-col items-center justify-center aspect-square w-full max-w-xs">
+                    <img src="https://educ.nekoweb.org/sisjanu/notas.jpg" alt="Ícone Notas" class="card-image">
+                    <h2 class="text-2xl font-semibold text-accent-blue mb-3">Notas</h2>
+                    <p class="text-gray-600 text-center">Lançamento e consulta de notas.</p>
+                </a>
+                <div class="counter-container">
+                    <i class="fas fa-clipboard-check counter-icon"></i>
+                    <span class="counter-value" id="contadorNotas">0</span>
+                </div>
+            </div>
 
             <!-- Card Boletim -->
-            <a href="https://educ.nekoweb.org/sisjanu/boletim.html" class="card bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 flex flex-col items-center justify-center aspect-square">
-                <img src="https://educ.nekoweb.org/sisjanu/boletim.jpg" alt="Ícone Boletim" class="card-image">
-                <h2 class="text-2xl font-semibold text-accent-blue mb-3">Boletim</h2>
-                <p class="text-gray-600 text-center">Geração de boletins individuais.</p>
-                <p class="text-xl font-bold text-accent-blue mt-2" id="contadorBoletins">0</p>
-            </a>
+            <div class="flex flex-col items-center">
+                <a href="https://educ.nekoweb.org/sisjanu/boletim.html" class="card bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 flex flex-col items-center justify-center aspect-square w-full max-w-xs">
+                    <img src="https://educ.nekoweb.org/sisjanu/boletim.jpg" alt="Ícone Boletim" class="card-image">
+                    <h2 class="text-2xl font-semibold text-accent-blue mb-3">Boletim</h2>
+                    <p class="text-gray-600 text-center">Geração de Boletins individuais.</p>
+                </a>
+                <div class="counter-container">
+                    <i class="fas fa-file-alt counter-icon"></i>
+                    <span class="counter-value" id="contadorBoletins">0</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Segunda linha de cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <!-- Card Boletim com AI -->
+            <div class="flex flex-col items-center">
+                <a href="https://educ.nekoweb.org/sisjanu/bol.html" class="card bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 flex flex-col items-center justify-center aspect-square w-full max-w-xs">
+                    <img src="https://educ.nekoweb.org/sisjanu/boletim.jpg" alt="Ícone Boletim" class="card-image">
+                    <h2 class="text-2xl font-semibold text-accent-blue mb-3">Boletim com AI</h2>
+                    <h3 class="text-xl font-semibold text-accent-blue mb-3">Anexo 1</h3>
+                    <p class="text-gray-600 text-center">Boletins individuais.</p>
+                </a>
+            </div>
+            
+            <!-- Card Agenda -->
+            <div class="flex flex-col items-center">
+                <a href="https://educ.nekoweb.org/sisjanu/agenda.html" class="card bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 flex flex-col items-center justify-center aspect-square w-full max-w-xs">
+                    <img src="https://educ.nekoweb.org/sisjanu/_Agenda%20Escolar_%20(escrito%20em%20portugues).jpg" alt="Ícone Agenda" class="card-image">
+                    <h2 class="text-2xl font-semibold text-accent-blue mb-3">Agenda</h2>
+                    <h3 class="text-xl font-semibold text-accent-blue mb-3">Anexo 2</h3>
+                    <p class="text-gray-600 text-center">Eventos da Escola.</p>
+                </a>
+            </div>
+            
+            <!-- Card Horário de Aulas -->
+            <div class="flex flex-col items-center">
+                <a href="https://educ.nekoweb.org/sisjanu/horario.html" class="card bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 flex flex-col items-center justify-center aspect-square w-full max-w-xs">
+                    <img src="https://educ.nekoweb.org/sisjanu/horario.jpg" alt="Ícone Horário" class="card-image">
+                    <h2 class="text-2xl font-semibold text-accent-blue mb-3">Horário de Aulas</h2>
+                    <h3 class="text-xl font-semibold text-accent-blue mb-3">Anexo 3</h3>
+                    <p class="text-gray-600 text-center">Horário.</p>
+                </a>
+            </div>
+            
+            <!-- Card Recursos com AI -->
+            <div class="flex flex-col items-center">
+                <a href="https://educ.nekoweb.org/geradores/home.html" class="card bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 flex flex-col items-center justify-center aspect-square w-full max-w-xs">
+                    <img src="https://educ.nekoweb.org/sisjanu/ai.png" alt="Ícone AI" class="card-image">
+                    <h2 class="text-2xl font-semibold text-accent-blue mb-3">Recursos com AI</h2>
+                    <h3 class="text-xl font-semibold text-accent-blue mb-3">Anexo 4</h3>
+                    <p class="text-gray-600 text-center">Geradores.</p>
+                </a>
+            </div>
         </div>
     </div>
-
+    
     <script>
-        // Função para carregar contadores
+        // Função para animar a contagem progressiva
+        function animateCounter(element, target) {
+            const duration = 1500; // 1.5 segundos
+            const start = 0;
+            const increment = target / (duration / 16); // 60fps
+            
+            let current = start;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    clearInterval(timer);
+                    current = target;
+                }
+                element.textContent = Math.floor(current);
+            }, 16);
+        }
+
+        // Função para carregar contadores com animação
         function carregarContadores() {
             // Contador de Alunos
             const alunos = JSON.parse(localStorage.getItem('alunos')) || [];
-            document.getElementById('contadorAlunos').textContent = alunos.length;
+            animateCounter(document.getElementById('contadorAlunos'), alunos.length);
 
             // Contador de Disciplinas
             const disciplinas = JSON.parse(localStorage.getItem('disciplinas')) || [];
-            document.getElementById('contadorDisciplinas').textContent = disciplinas.length;
+            animateCounter(document.getElementById('contadorDisciplinas'), disciplinas.length);
 
             // Contador de Notas (alunos com pelo menos uma nota lançada)
             const notas = JSON.parse(localStorage.getItem('notas')) || [];
-            const alunosComNotas = new Set(notas.map(nota => nota.aluno)).size; // Conta alunos únicos com notas
-            document.getElementById('contadorNotas').textContent = alunosComNotas;
+            const alunosComNotas = new Set(notas.map(nota => nota.aluno)).size;
+            animateCounter(document.getElementById('contadorNotas'), alunosComNotas);
 
             // Contador de Boletins (quantidade de boletins gerados)
             const boletins = JSON.parse(localStorage.getItem('boletins')) || [];
-            document.getElementById('contadorBoletins').textContent = boletins.length;
+            animateCounter(document.getElementById('contadorBoletins'), boletins.length);
         }
 
+        // Função para alternar modo escuro
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const toggleLabel = document.getElementById('toggleLabel');
+        
+        // Verificar preferência salva
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            document.body.classList.add('dark');
+            darkModeToggle.checked = true;
+            toggleLabel.textContent = 'Modo Claro';
+        }
+        
+        // Ouvinte de evento para o toggle
+        darkModeToggle.addEventListener('change', function() {
+            if (this.checked) {
+                document.body.classList.add('dark');
+                localStorage.setItem('darkMode', 'enabled');
+                toggleLabel.textContent = 'Modo Claro';
+            } else {
+                document.body.classList.remove('dark');
+                localStorage.setItem('darkMode', 'disabled');
+                toggleLabel.textContent = 'Modo Escuro';
+            }
+        });
+
         // Carregar contadores ao abrir a página
-        carregarContadores();
+        document.addEventListener('DOMContentLoaded', carregarContadores);
     </script>
-  <marquee></marquee>
+    <marquee></marquee>
     <center><p><small>Desenvolvido por Sérgio Araújo 2025 | CC 4.0</small></p></center>
-    
 </body>
 </html>
